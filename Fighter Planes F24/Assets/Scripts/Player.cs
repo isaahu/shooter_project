@@ -1,74 +1,74 @@
-//Isabella Ahumada
-//Gabriel Castaneria
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
 
 public class Player : MonoBehaviour
 {
-    //variables
-    //1. access level: public or private
-    //2. type: int (e.g., 2, 4, 123, 3456, etc.), float (e.g, 2.5, 3.67, etc.)
-    //3. name: (1) start w/ lowercase (2) if it is multiple words, then the other words start with uppercase and written together
-    //4. optional: give it an initial value
-    
+
     private float horizontalInput;
     private float verticalInput;
     private float speed;
+    private float horizontalScreenLimit;
+    private float verticalScreenLimit;
+    public GameObject explosion;
     public GameObject bullet;
+    public static int lives;
 
-    // Bounds
-    // if my X position is bigger than 11.5f than I am outside the screen from the right 
-    // if my Y position is lower than -8, then I am outside of the screen from the bottom
-
-    private float xBoundary = 11.5f; // Example values
-    private float bottomBoundary = -8f; // Example values
-    private float middleBoundary;
-
+    // Start is called before the first frame update
     void Start()
     {
         speed = 6f;
-        middleBoundary = (bottomBoundary + 8f) / 2f; // Assuming 8f is the top of the screen
+        horizontalScreenLimit = 11.5f;
+        verticalScreenLimit = 7.5f;
+        lives = 3;
     }
 
+    // Update is called once per frame
     void Update()
     {
-        Moving();
+        Movement();
         Shooting();
     }
 
-    void Moving()
+    void Movement()
     {
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
         transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * speed);
-
-        // Left and right looping
-        if (transform.position.x > xBoundary)
+        if (transform.position.x > horizontalScreenLimit || transform.position.x <= -horizontalScreenLimit)
         {
-            transform.position = new Vector3(-xBoundary, transform.position.y, 0);
+            transform.position = new Vector3(transform.position.x * -1, transform.position.y, 0);
         }
-        else if (transform.position.x < -xBoundary)
+        if (transform.position.y > verticalScreenLimit || transform.position.y <= -verticalScreenLimit)
         {
-            transform.position = new Vector3(xBoundary, transform.position.y, 0);
-        }
-
-        // Top and bottom bound check
-        if (transform.position.y > middleBoundary)
-        {
-            transform.position = new Vector3(transform.position.x, middleBoundary, 0);
-        }
-        else if (transform.position.y < bottomBoundary)
-        {
-            transform.position = new Vector3(transform.position.x, bottomBoundary, 0);
+            transform.position = new Vector3(transform.position.x, transform.position.y * -1, 0);
         }
     }
 
     void Shooting()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             Instantiate(bullet, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+        }
+    }
+
+    public void LoseALife()
+    {
+        //lives = lives - 1;
+        //lives -= 1;
+        
+        lives--;
+        Debug.Log("You lost a life.");
+        
+
+        if (lives == 0)
+        {
+            Instantiate(explosion, transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+            Debug.Log("You ran out of lives!");
         }
     }
 }

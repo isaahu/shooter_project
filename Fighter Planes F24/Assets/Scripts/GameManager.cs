@@ -1,35 +1,57 @@
-//Isabella Ahumada
-//Gabriel Castaneria
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject player;
-    public GameObject enemy; // Existing enemy
-    public GameObject newEnemy; // New enemy
 
+    public GameObject player;
+    public GameObject enemy;
+    public GameObject cloud;
+    private int score;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI livesText;
+
+    // Start is called before the first frame update
     void Start()
     {
         Instantiate(player, transform.position, Quaternion.identity);
-        InvokeRepeating("CreateEnemy", 1f, 3f); // Original enemy
-        InvokeRepeating("CreateNewEnemy", 2f, 5f); // New enemy with different spawn time
+        InvokeRepeating("CreateEnemy", 1f, 3f);
+        CreateSky();
+        score = 0;
+        scoreText.text = "Score: " + score;
+
     }
 
+    // Update is called once per frame
     void Update()
     {
-        
+        int liveCount = Player.lives;
+        livesText.text = "Lives: " + liveCount;
     }
 
     void CreateEnemy()
     {
-        Instantiate(enemy, new Vector3(Random.Range(-9f, 9f), 8f, 0), Quaternion.identity);
+        Instantiate(enemy, new Vector3(Random.Range(-9f, 9f), 7.5f, 0), Quaternion.identity);
     }
 
-    void CreateNewEnemy()
+    void CreateSky()
     {
-        Instantiate(newEnemy, new Vector3(11f, Random.Range(1f, 6f), 0), Quaternion.identity);
+        for (int i = 0; i < 30; i++)
+        {
+            Instantiate(cloud, transform.position, Quaternion.identity);
+        }
     }
+
+    public void EarnScore(int howMuch) 
+    {  
+        score = score + howMuch;
+        scoreText.text = "Score: " + score;
+    }
+
+
+
+
 }
